@@ -17,11 +17,11 @@ soup = BeautifulSoup(raw, 'html.parser')
 
 conn = sqlite3.connect('gva.db')
 c = conn.cursor()
-c.execute("CREATE TABLE GVA(id int, event_name text, location text, geolocation text, city text, state text, congress int, name text, type text, age int, gender text, status text, relationship text, characteristics text, notes text, source text, nonshooting text, accident text, home text, defense text, defense3 text, mass text, school text, suicide text, date text, killed int, injured int);")
+c.execute("CREATE TABLE GVA(id int, event_name text, location text, geolocation text, city text, state text, congress int, name text, type text, age int, gender text, status text, relationship text, characteristics text, notes text, source text, nonshooting text, accident text, home text, defense text, defense3 text, mass text, school text, suicide text, date text);")
 
-def writeEntry(id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date, killed, injured):
-	request = '{0}, \"{1}\", \"{2}\", \"{3}\", \"{4}\", \"{5}\", {6}, \"{7}\", \"{8}\", {9}, \"{10}\", \"{11}\", \"{12}\", \"{13}\", \"{14}\", \"{15}\", \"{16}\", \"{17}\", \"{18}\", \"{19}\", \"{20}\", \"{21}\", \"{22}\", \"{23}\", \"{24}\", {25}, {26}'.format(
-		id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date, str(killed), str(injured))
+def writeEntry(id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date):
+	request = '{0}, \"{1}\", \"{2}\", \"{3}\", \"{4}\", \"{5}\", {6}, \"{7}\", \"{8}\", {9}, \"{10}\", \"{11}\", \"{12}\", \"{13}\", \"{14}\", \"{15}\", \"{16}\", \"{17}\", \"{18}\", \"{19}\", \"{20}\", \"{21}\", \"{22}\", \"{23}\", \"{24}\"'.format(
+		id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date)
 	c.execute("INSERT INTO GVA VALUES({0});".format(request))
 
 for i in range(int(len(soup)/2)):
@@ -51,8 +51,6 @@ for i in range(int(len(soup)/2)):
 	mass = "FALSE"
 	school = "FALSE"
 	suicide = "FALSE"
-	killed = 0
-	injured = 0
 	headings = doc.find_all('h2')
 	# first build the entries that will be the same for all participants
 	for h in headings:
@@ -113,7 +111,13 @@ for i in range(int(len(soup)/2)):
 		if (h.string == 'Participants'):
 			people = h.parent.find_all('ul')
 			for person in people:
-				entries = person.parent.find_all('li')
+				type = "NULL"
+				name = "NULL"
+				age = "NULL"
+				gender = "NULL"
+				status = "NULL"
+				relationship = "NULL"
+				entries = person.find_all('li')
 				for e in entries:
 					key = e.string.split(":")[0]
 					value = e.string.split(":")[1].strip()
@@ -127,13 +131,9 @@ for i in range(int(len(soup)/2)):
 						gender = value
 					if (key == 'Status'):
 						status = value
-						if (status == "Injured"):
-							injured += 1
-						if (status == "Killed"):
-							killed += 1
 					if (key == 'Relationship'):
 						relationship = value
-				writeEntry(id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date, killed, injured)
+				writeEntry(id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date)
 
 conn.commit()
 conn.close()
