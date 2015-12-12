@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 import sqlite3
 
-raw = open("results.txt", "r").read()
+raw = open("results.txt", encoding="utf8").read()
 soup = BeautifulSoup(raw, 'html.parser')
 
 # row type reference:
@@ -26,19 +25,19 @@ for i in range(int(len(soup)/2)):
 	id = soup.contents[2*i]
 	doc = soup.contents[2*i + 1]
 	event_name = doc.h1.string
-	location = 'NA'
-	geolocation = 'NA'
-	state = 'NA'
-	congress = 0
-	name = 'NA'
-	type = 'NA'
-	age = 0
-	gender = 'NA'
-	status = 'NA'
-	relationship = 'NA'
-	characteristics = 'NA'
-	notes = 'NA'
-	source = 'NA'
+	location = "NULL"
+	geolocation = "NULL"
+	state = "NULL"
+	congress = "NULL"
+	name = "NULL"
+	type = "NULL"
+	age = "NULL"
+	gender = "NULL"
+	status = "NULL"
+	relationship = "NULL"
+	characteristics = "NULL"
+	notes = "NULL"
+	source = "NULL"
 	headings = doc.find_all('h2')
 	# first build the entries that will be the same for all participants
 	for h in headings:
@@ -89,7 +88,7 @@ for i in range(int(len(soup)/2)):
 					if (key == 'Type'):
 						type = value
 					if (key == 'Name'):
-						name = value
+						name = value.replace("\"","\'")
 					if (key == 'Age'):
 						age = value
 					if (key == 'Gender'):
@@ -98,7 +97,6 @@ for i in range(int(len(soup)/2)):
 						status = value
 					if (key == 'Relationship'):
 						relationship = value
-				print(id)
 				writeEntry(id, event_name, location, geolocation, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source)
 
 conn.commit()
