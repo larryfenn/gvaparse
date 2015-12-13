@@ -38,10 +38,10 @@ c.execute('SELECT status, characteristics, gender FROM GVA')
 entry = c.fetchone()
 while (entry is not None):
 	# NOTE: many statuses have multiple conditions!
-	status = entry[0].encode('latin-1')
+	status = entry[0]
 #	characteristics = entry[1].encode('latin-1').split('\n')
 	characteristics = entry[1].split('\n')
-	gender = entry[2].encode('latin-1')
+	gender = entry[2]
 	for tag in characteristics:
 		if ("Unharmed" in status):
 			addToDict(unharmed, tag)
