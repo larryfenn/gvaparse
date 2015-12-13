@@ -20,9 +20,12 @@ c = conn.cursor()
 c.execute("CREATE TABLE GVA(id int, event_name text, location text, geolocation text, city text, state text, congress int, name text, type text, age int, gender text, status text, relationship text, characteristics text, notes text, source text, nonshooting text, accident text, home text, defense text, defense3 text, mass text, school text, suicide text, date text);")
 
 def writeEntry(id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date):
-	request = '{0}, \"{1}\", \"{2}\", \"{3}\", \"{4}\", \"{5}\", {6}, \"{7}\", \"{8}\", {9}, \"{10}\", \"{11}\", \"{12}\", \"{13}\", \"{14}\", \"{15}\", \"{16}\", \"{17}\", \"{18}\", \"{19}\", \"{20}\", \"{21}\", \"{22}\", \"{23}\", \"{24}\"'.format(
-		id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date)
-	c.execute("INSERT INTO GVA VALUES({0});".format(request))
+	try:
+		request = '{0}, \"{1}\", \"{2}\", \"{3}\", \"{4}\", \"{5}\", {6}, \"{7}\", \"{8}\", {9}, \"{10}\", \"{11}\", \"{12}\", \"{13}\", \"{14}\", \"{15}\", \"{16}\", \"{17}\", \"{18}\", \"{19}\", \"{20}\", \"{21}\", \"{22}\", \"{23}\", \"{24}\"'.format(
+			id, event_name, location, geolocation, city, state, congress, name, type, age, gender, status, relationship, characteristics, notes, source, nonshooting, accident, home, defense, defense3, mass, school, suicide, date)
+		c.execute("INSERT INTO GVA VALUES({0});".format(request))
+	except:
+		print(request)
 
 for i in range(int(len(soup)/2)):
 	id = soup.contents[2*i]
@@ -62,7 +65,7 @@ for i in range(int(len(soup)/2)):
 					if v.string.startswith('Geolocation'):
 						geolocation = v.string.split(":")[1].strip()
 					else:
-						location += v.string + "\n"
+						location += v.string.replace("\"","\'") + "\n"
 						state = v.string.split(",")
 						city = state[0].strip()
 						state = state[len(state) - 1].strip()
@@ -104,6 +107,8 @@ for i in range(int(len(soup)/2)):
 
 		if (h.string == 'District'):
 			congress = h.next_sibling.string.split(" ")[2]
+		if (congress == "" or congress == " "):
+			congress = "NULL"
 
 	# for each participant, create the entry
 	# the loop has to be run again because we need all the other fields first
