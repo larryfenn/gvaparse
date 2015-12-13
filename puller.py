@@ -1,3 +1,5 @@
+# python 3
+
 import csv
 import sqlite3
 conn = sqlite3.connect('gva.db')
@@ -30,7 +32,7 @@ for cas in casualty_types:
 			cas = 'InjuredKilled' # fixing my SQL injection hack
 		casualtiesbystate = [0]*79 # us-state names
 		with open('./gentables/{0}-{1}.csv'.format(cas, inc), 'w') as f:
-			writer = csv.writer(f, lineterminator='\n')
+			writer = csv.writer(f, lineterminator='\n') # windows compatability
 			writer.writerow(['date', 'city', 'state', 'age', 'gender', 'status', 'source', 'accident', 'defense', 'defense3', 'mass'])
 			row = c.fetchone()
 			while row is not None:

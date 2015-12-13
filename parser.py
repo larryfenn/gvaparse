@@ -1,4 +1,7 @@
+# python 3
+
 from bs4 import BeautifulSoup
+import os, sys
 import sqlite3
 
 raw = open("results.txt", encoding="utf8").read()
@@ -14,7 +17,7 @@ soup = BeautifulSoup(raw, 'html.parser')
 
 # .. SOURCE | NONSHOOTING | ACCIDENT | HOME | DEFENSE | DEFENSE3 | MASS | SCHOOL
 # .. TEXT   | TEXT        | TEXT     | TEXT | TEXT    | TEXT     | TEXT | TEXT
-
+os.remove('gva.db')
 conn = sqlite3.connect('gva.db')
 c = conn.cursor()
 c.execute("CREATE TABLE GVA(id int, event_name text, location text, geolocation text, city text, state text, congress int, name text, type text, age int, gender text, status text, relationship text, characteristics text, notes text, source text, nonshooting text, accident text, home text, defense text, defense3 text, mass text, school text, suicide text, date text);")

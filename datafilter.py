@@ -1,3 +1,4 @@
+# python 2.7
 # first task: collect in CSV format all the incident types.
 
 import csv
@@ -38,7 +39,8 @@ entry = c.fetchone()
 while (entry is not None):
 	# NOTE: many statuses have multiple conditions!
 	status = entry[0].encode('latin-1')
-	characteristics = entry[1].encode('latin-1').split('\n')
+#	characteristics = entry[1].encode('latin-1').split('\n')
+	characteristics = entry[1].split('\n')
 	gender = entry[2].encode('latin-1')
 	for tag in characteristics:
 		if ("Unharmed" in status):
@@ -68,7 +70,7 @@ with open('encoding.csv', 'w') as f:
 	w = csv.DictWriter(f, encoding.keys())
 	w.writeheader()
 	w.writerow(encoding)
-	
+
 # filter database into csv for data filtering.
 # the two model ideas i have are about states and the relation to the other variables
 # date is brought along in case i want to do time series analysis
