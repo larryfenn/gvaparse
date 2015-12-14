@@ -1,4 +1,5 @@
 # python 3
+# processes raw HTML and turns it into beautiful, beautiful SQLite data
 # TODO: make NULL entries actually NULL, rather than strings of value "NULL" (i'm sorry)
 
 from bs4 import BeautifulSoup

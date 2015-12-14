@@ -31,29 +31,28 @@ def addToDict(dict, key):
 	else:
 		dict[key] = 1
 
-# filtering code: edit this as you please:
-c.execute('SELECT status, characteristics, gender FROM GVA')
+c.execute('SELECT status, characteristics, gender FROM GVA where type == \"Perpetrator\"')
 entry = c.fetchone()
 while (entry is not None):
 	# NOTE: many statuses have multiple conditions!
 	status = entry[0]
-#	characteristics = entry[1].encode('latin-1').split('\n')
 	characteristics = entry[1].split('\n')
 	gender = entry[2]
 	for tag in characteristics:
-		if ("Unharmed" in status):
-			addToDict(unharmed, tag)
-		if ("Injured" in status):
-			addToDict(injured, tag)
-		if ("Killed" in status):
-			addToDict(killed, tag)
-		if ("Arrested" in status):
-			addToDict(arrested, tag)
-		if ("Male" in gender):
-			addToDict(male, tag)
-		if ("Female" in gender):
-			addToDict(female, tag)
-		addToDict(total, tag)
+		if ("Shot" not in tag):
+			if ("Unharmed" == status):
+				addToDict(unharmed, tag)
+			if ("Injured" == status):
+				addToDict(injured, tag)
+			if ("Killed" == status):
+				addToDict(killed, tag)
+			if ("Arrested" == status):
+				addToDict(arrested, tag)
+			if ("Male" == gender):
+				addToDict(male, tag)
+			if ("Female" == gender):
+				addToDict(female, tag)
+			addToDict(total, tag)
 	entry = c.fetchone()
 
 # in the original data set characteristics is a bunch of strings separated by newlines
@@ -69,30 +68,6 @@ with open('encoding.csv', 'w') as f:
 	w.writeheader()
 	w.writerow(encoding)
 
-# filter database into csv for data filtering.
-# the two model ideas i have are about states and the relation to the other variables
-# date is brought along in case i want to do time series analysis
-# so we have to insist that states are nonempty
-c.execute('SELECT state, type, age, gender, status, relationship, characteristics, date FROM GVA where state != \"\"')
-
-with open('modeldata.csv', 'w') as f:
-	writer = csv.writer(f, lineterminator='\n') # windows compatability
-	writer.writerow(['state, type, age, gender, status, relationship, characteristics, date'])
-	entry = c.fetchone()
-	while (entry is not None):
-		# need to match all the characteristics with their one-hot equivalents, and sum up
-		charcode = [0]*len(total.keys())
-		characteristics = entry[6].encode('latin-1').split('\n')
-		for char in characteristics:
-			charcode = [x + y for x, y in zip(charcode, encoding[char])]
-		# now we format the list of zeroes and ones as simply "0010101"
-		charcodestr = ""
-		for char in charcode:
-			charcodestr += str(char)
-		row = list(entry)
-		row[6] = charcodestr
-		writer.writerow(row)
-		entry = c.fetchone()
 conn.close()
 
 # visualizing code
@@ -103,31 +78,34 @@ def plotHist(input, select):
 	plt.xticks(x, d.keys())
 	plt.show()
 
-def plotPie(input, colormapscale=1):
+def plotPie(input, colormapscale=1, bottom=.75):
 	maxval = sum(input.values())
 	minval = 0
 	d = sorted(input.iteritems(), key = operator.itemgetter(1), reverse = True)
-	# weed out the bottom 20% and lump into one:
 	labels = []
 	sizes = []
+	wedgecounter = 0
 	running = 0
 	for i in d:
 		labels.append(i[0])
 		sizes.append(i[1])
 		running += i[1]
-		if running > (.75*maxval):
+		wedgecounter += 1
+		if running > (bottom*maxval):
 			minval = i[1]
+			wedgecounter += 1
 			break
-	labels.append("Bottom {0:.0f}%".format(100*(1 - running/float(maxval))))
+	labels.append("Other".format(100*(1 - running/float(maxval))))
 	sizes.append(maxval - running)
-	norm = matplotlib.colors.Normalize(minval, colormapscale * d[0][1])
-	cmap = matplotlib.cm.get_cmap('Set1')
+	percents = 100.*np.array(sizes)/np.array(sizes).sum()
+	labels = ['{1:1.2f}% - {0}'.format(i, j) for i, j in zip(labels, percents)]
+	norm = matplotlib.colors.Normalize(0, wedgecounter)
+	cmap = matplotlib.cm.get_cmap('Set2')
 	fig = pylab.figure()
 	figlegend = pylab.figure(figsize=(3,2))
 	ax = fig.add_subplot(111)
-	patches, texts = ax.pie(sizes, startangle=90, colors=cmap(norm(sizes)))
+	patches, texts = ax.pie(sizes, startangle=90, colors=cmap(norm(range(wedgecounter))))
 	ax.axis('equal')
 	figlegend.legend(patches, labels, 'center')
 	fig.show()
 	figlegend.show()
-

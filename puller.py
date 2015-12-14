@@ -1,5 +1,5 @@
 # python 3
-
+# assistant for making the background data for the webpage
 import csv
 import sqlite3
 conn = sqlite3.connect('gva.db')
