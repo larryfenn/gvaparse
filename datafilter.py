@@ -1,6 +1,4 @@
 # python 2.7
-# first task: collect in CSV format all the incident types.
-
 import csv
 import numpy as np
 import matplotlib

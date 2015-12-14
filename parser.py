@@ -1,4 +1,5 @@
 # python 3
+# TODO: make NULL entries actually NULL, rather than strings of value "NULL" (i'm sorry)
 
 from bs4 import BeautifulSoup
 import os, sys
