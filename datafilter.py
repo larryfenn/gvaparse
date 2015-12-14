@@ -31,7 +31,7 @@ def addToDict(dict, key):
 	else:
 		dict[key] = 1
 
-c.execute('SELECT status, characteristics, gender FROM GVA where type == \"Perpetrator\"')
+c.execute('SELECT status, characteristics, gender FROM GVA where type == \"Victim\"')
 entry = c.fetchone()
 while (entry is not None):
 	# NOTE: many statuses have multiple conditions!
