@@ -16,8 +16,6 @@ names = list(reader)
 # first we need to build a collection of all the possible characteristics.
 # lots of categorical variables: state, type (victim|perp), gender (male|female|null), status (killed|injured|unharmed), relationship (?? also need to filter those), characteristics
 
-# first pass: build a library of all possible characteristics tags
-# and collect them all in a dict
 total = {}
 unharmed = {}
 injured = {}
@@ -54,20 +52,6 @@ while (entry is not None):
 				addToDict(female, tag)
 			addToDict(total, tag)
 	entry = c.fetchone()
-
-# in the original data set characteristics is a bunch of strings separated by newlines
-# we need to turn that into one-hot
-# the rest of the categorical variables are left as-is
-encoding = {}
-for i in range(len(total.keys())):
-	code = [0]*len(total.keys())
-	code[i] = 1
-	encoding[total.keys()[i]] = code
-with open('encoding.csv', 'w') as f:
-	w = csv.DictWriter(f, encoding.keys())
-	w.writeheader()
-	w.writerow(encoding)
-
 conn.close()
 
 # visualizing code
