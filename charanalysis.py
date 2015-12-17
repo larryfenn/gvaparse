@@ -48,7 +48,7 @@ X = vec.fit_transform(data).toarray()
 X = preprocessing.scale(X)
 
 n_components = 10
-alpha = 100
+alpha = 50
 component_thresh = 0
 from sklearn import decomposition
 estimator = decomposition.SparsePCA(n_components=n_components, alpha=alpha, verbose=True)
@@ -62,16 +62,12 @@ for i in range(len(X_pca.components_)):
 	newfeatures.append(feature)
 print(len(newfeatures[0])) # report on how many items are in the sparse representation
 for i in range(len(newfeatures)):
-	print(newfeatures[i].keys())
-
-
-
+	draw(i)
 import matplotlib.pyplot as plt
-
 
 def draw(i):
 	""" draw the bar graph corresponding to newfeatures[index] """
-	plt.bar(range(len(newfeatures[i])), newfeatures[i].values())
-	plt.xticks(range(len(newfeatures[i])), newfeatures[i].keys(), rotation='vertical')
+	plt.barh(range(len(newfeatures[i])), newfeatures[i].values(), align='center')
+	plt.yticks(range(len(newfeatures[i])), newfeatures[i].keys())
 	plt.savefig(str(i) + '.png', bbox_inches='tight')
 	plt.close()
