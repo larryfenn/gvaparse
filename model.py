@@ -21,7 +21,7 @@ with open('pop.csv', 'r') as f:
 
 conn = sqlite3.connect('gva.db')
 c = conn.cursor()
-c.execute('SELECT date, age, state, type, gender, status, characteristics FROM GVA where state != \"\" AND age != \"\" AND type == \"Victim\" AND characteristics != \"NULL\" AND characteristics != \"\"')
+c.execute('SELECT date, age, state, type, gender, status, characteristics FROM GVA where state != \"\" AND characteristics != \"NULL\" AND characteristics != \"\"')
 data = []
 
 stateabbrevs = {}
@@ -36,7 +36,6 @@ entry = c.fetchone()
 while (entry is not None):
 	item = {}
 	statelabels.append(entry[2])
-	item["age"] = float(entry[1]) # float because we don't want to treat this as a categorical
 	item["state"] = entry[2]
 	item["gender"] = entry[4]
 	item["status"] = entry[5]
@@ -74,7 +73,6 @@ for d in data:
 		addToDict(accident, d['state'], 1)
 	else:
 		addToDict(naccident, d['state'], 1)
-
 
 # first make a scatterplot of 'legitimate' (defense) and 'illegitimate' (non-accident non-defense) uses
 defense = {}
@@ -153,21 +151,5 @@ for index, linkage in enumerate(('average', 'complete', 'ward')):
 	                    left=0, right=1)
 	plt.suptitle('n_cluster=%i, connectivity=%r' %
 	             (n_clusters, connectivity is not None), size=17)
-
-
-taggedx = []
-taggedy = []
-taggedlabels = []
-for i in range(len(model.labels_)):
-	if (model.labels_[i] == 1):
-		taggedx.append(x[i])
-		taggedy.append(y[i])
-		taggedlabels.append(labels[i])
-
-# scatterplot 2: accident vs. defense for fifty states without the noise
-fig, ax = plt.subplots()
-ax.scatter(taggedx, taggedy)
-for i, txt in enumerate(taggedlabels):
-	ax.annotate(txt, (taggedx[i], taggedy[i]))
 
 plt.show()
