@@ -80,7 +80,7 @@ def plotPie(input, colormapscale=1, bottom=.75):
 	for l in labels:
 		labelcolors.append(total.keys().index(l))
 	labels.append("Other".format(100*(1 - running/float(maxval))))
-	labelcolors.append(len(input.keys()) + 1)
+	labelcolors.append(len(total.keys()) + 1)
 	sizes.append(maxval - running)
 	percents = 100.*np.array(sizes)/np.array(sizes).sum()
 	labels = ['{1:1.2f}% - {0}'.format(i, j) for i, j in zip(labels, percents)]
@@ -93,5 +93,5 @@ def plotPie(input, colormapscale=1, bottom=.75):
 	ax.axis('equal')
 	figlegend.legend(patches, labels, 'center')
 	fig.show()
-	fig.savefig('v.png', bbox_inches='tight')
+	fig.savefig('f.png', bbox_inches='tight')
 	figlegend.show()
